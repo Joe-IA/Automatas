@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 #include "automatas.h"
+#include "display.h"
 using namespace std;
 
 int main(int argc, char **argv){
@@ -41,30 +42,30 @@ int main(int argc, char **argv){
             break;
         switch(opcion){
             case '1':
-                describeAutomata(automata);
+                automata.describeAutomata();
                 break;
             case '2':
                 cout << "Ingresar transición: ";
                 getline(cin, input);
                 cleanInput = cleanTransitionInput(input);
-                cout << input << " = " << carryOutTransition(automata, cleanInput.first, cleanInput.second) << "\n";
+                cout << input << " = " << automata.carryOutTransition(cleanInput.first, cleanInput.second) << "\n";
                 break;
             case '3':
                 cout << "Ingrese la cadena a analizar: ";
                 cin >> input;
-                visitedNodes =  wordAccepter(automata, input);
+                visitedNodes =  automata.acceptWord(input);
                 printVisitedNodes(visitedNodes);
                 break;
             case '4':
-                describeAutomata(automata);
-                if(!isAutomataND(automata)){
+                automata.describeAutomata();
+                if(!automata.isAutomataND()){
                     cout << "El automata cumple con las caracteristicas de un AFD.\n";
                     cout << "Todas las transiciones tienen un camino determinista.\n";
                 }
                 else{
                     cout << "El autómata representa un AFND.\n";
                     cout << "Las transiciones ambiguas son las siguientes:\n";
-                    printAmbiguousTransitions(findAmbiguousTransitions(automata));
+                    printAmbiguousTransitions(automata.findAmbiguousTransitions());
                 }
                 break;
         }

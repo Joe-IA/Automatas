@@ -16,18 +16,14 @@ struct Automata{
     string initialState;
     set<char> alphabet;
     unordered_map<string, unordered_map<char, vector<string>>> transitions;
-};
 
-void printStates(set<string> statesSet, string stateType);
-void printAlphabet(set<char> alphabet);
-void printTransitions(unordered_map<string, unordered_map<char, vector<string>>> transitions);
-void describeAutomata(Automata Automata);
-string carryOutTransition(Automata automata, string currentState, char input);
-pair<string, char> cleanTransitionInput(string input);
-vector<string> wordAccepter(Automata automata, string word);
-void printVisitedNodes(vector<string> nodes);
-bool isAutomataND(Automata automata);
-vector<pair<pair<string, char>, vector<string>>> findAmbiguousTransitions(Automata automata);
-void printAmbiguousTransitions(vector<pair<pair<string, char>, vector<string>>>transitions);
+    void printTransitions();
+    void printAlphabet();
+    void describeAutomata();
+    string carryOutTransition(string currentState, char input);
+    bool isAutomataND();
+    vector<pair<pair<string, char>, vector<string>>> findAmbiguousTransitions();
+    vector<string> acceptWord(string word);
+};
 
 #endif

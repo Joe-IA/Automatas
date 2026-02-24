@@ -5,42 +5,41 @@
 #include <utility>
 #include <vector>
 #include "automatas.h"
-#include "display.h"
-using namespace std;
+
 
 void Automata::printAlphabet(){
-    cout << "Alphabet: {";
+    std::cout << "Alphabet: {";
     for(auto it = alphabet.begin(); it != alphabet.end(); ++it){
-        cout << *it;
+        std::cout << *it;
         if(next(it) != alphabet.end())
-            cout << ", ";
+            std::cout << ", ";
     }
-    cout << "}\n";
+    std::cout << "}\n";
 }
 
 void Automata::printTransitions(){
-    cout << "δ: {\n";
+    std::cout << "δ: {\n";
     for(const auto &pair: transitions){
-        string key = pair.first;
+        std::string key = pair.first;
         for(const auto &stateChangePair: transitions[key]){
             char input = stateChangePair.first;
-            for(const string &newState: stateChangePair.second){
-                cout << "T: (" << key << ", " << input << ") = " << newState << "\n";
+            for(const std::string &newState: stateChangePair.second){
+                std::cout << "T: (" << key << ", " << input << ") = " << newState << "\n";
             }
         }
     }
-    cout << "}\n";
+    std::cout << "}\n";
 }
 
 void Automata::describeAutomata(){
     printStates(states, "Q");
     printAlphabet();
     printTransitions();
-    cout << "s: " << initialState << "\n";
+    std::cout << "s: " << initialState << "\n";
     printStates(finalStates, "F");
 }
 
-string Automata::carryOutTransition(string currentState, char input){
+std::string Automata::carryOutTransition(std::string currentState, char input){
         if(isAutomataND())
             return "No deterministic automata";
         
@@ -56,18 +55,18 @@ string Automata::carryOutTransition(string currentState, char input){
 
 
 
-vector<string> Automata::acceptWord(string word){
-    string currentState = initialState, nextState, currentString = "", finalExplanation = "";
+std::vector<std::string> Automata::acceptWord(std::string word){
+    std::string currentState = initialState, nextState, currentString = "", finalExplanation = "";
     bool error = false;
-    vector<string> visitedNodes;
-    cout << "Estado inicial: " << currentState << "\n";
-    cout << "Analizar cadena: " << word << "\n";
-    cout << "-----\n";
+    std::vector<std::string> visitedNodes;
+    std::cout << "Estado inicial: " << currentState << "\n";
+    std::cout << "Analizar cadena: " << word << "\n";
+    std::cout << "-----\n";
     visitedNodes.push_back(currentState);
     for(const char &c: word){
         nextState = carryOutTransition(currentState, c);
-        cout << "Estado actual: " << currentState << "\n";
-        cout << "Entrada: " << c << "\n";
+        std::cout << "Estado actual: " << currentState << "\n";
+        std::cout << "Entrada: " << c << "\n";
         if(alphabet.find(c) == alphabet.end()){
             finalExplanation = "Alfabeto no reconocido: Cadena rechazada";
             error = true;
@@ -78,14 +77,14 @@ vector<string> Automata::acceptWord(string word){
             error = true;
             break;
         }
-        cout << "Estado Destino: " << nextState << "\n";
+        std::cout << "Estado Destino: " << nextState << "\n";
         currentState = nextState;
         visitedNodes.push_back(currentState);
         currentString.push_back(c);
-        cout << "Cadena Actual: " << currentString << "\n";
-        cout << "----\n";
+        std::cout << "Cadena Actual: " << currentString << "\n";
+        std::cout << "----\n";
     }
-    cout << "-----\n";
+    std::cout << "-----\n";
     if(!error){
         if(finalStates.find(currentState) != finalStates.end()){
             finalExplanation = currentState + " es un estado final: Cadena aceptada";
@@ -94,7 +93,7 @@ vector<string> Automata::acceptWord(string word){
             finalExplanation = currentState + " no es un estado final: Cadena Rechazada";
         }
     }
-    cout << "Cadena: " << '"' << word << '"' << " analizada, " << finalExplanation << "\n";
+    std::cout << "Cadena: " << '"' << word << '"' << " analizada, " << finalExplanation << "\n";
     return visitedNodes;
 }
 
@@ -108,9 +107,9 @@ bool Automata::isAutomataND(){
     return false;
 }
 
-vector<pair<pair<string, char>, vector<string>>> Automata::findAmbiguousTransitions(){
-    vector<pair<pair<string, char>, vector<string>>> ambiguosTransitions;
-    pair<string, char> innerPair;
+std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>> Automata::findAmbiguousTransitions(){
+    std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>> ambiguosTransitions;
+    std::pair<std::string, char> innerPair;
     for(const auto &[key, value]: transitions){
         for(const auto &[input, trans]: transitions.find(key)->second){
             innerPair = {key, input};
@@ -121,3 +120,12 @@ vector<pair<pair<string, char>, vector<string>>> Automata::findAmbiguousTransiti
     return ambiguosTransitions;
 }
 
+void Automata::printStates(std::set<std::string> statesSet, std::string stateType){
+    std::cout << stateType << ":  {";
+    for(auto it = statesSet.begin(); it != statesSet.end(); ++it){
+        std::cout << *it;
+        if(next(it) != statesSet.end())
+            std::cout << ", ";
+    }
+    std::cout << "}\n";
+}

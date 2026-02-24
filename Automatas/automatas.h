@@ -8,22 +8,23 @@
 #include <string>
 #include <utility>
 #include <vector>
-using namespace std;
+
 
 struct Automata{
-    set<string> states;
-    set<string> finalStates;
-    string initialState;
-    set<char> alphabet;
-    unordered_map<string, unordered_map<char, vector<string>>> transitions;
+    std::set<std::string> states;
+    std::set<std::string> finalStates;
+    std::string initialState;
+    std::set<char> alphabet;
+    std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>> transitions;
 
     void printTransitions();
     void printAlphabet();
     void describeAutomata();
-    string carryOutTransition(string currentState, char input);
+    std::string carryOutTransition(std::string currentState, char input);
     bool isAutomataND();
-    vector<pair<pair<string, char>, vector<string>>> findAmbiguousTransitions();
-    vector<string> acceptWord(string word);
+    std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>> findAmbiguousTransitions();
+    std::vector<std::string> acceptWord(std::string word);
+    void printStates(std::set<std::string> statesSet, std::string stateType);
 };
 
 #endif

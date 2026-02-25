@@ -131,6 +131,81 @@ void Automata::printStates(std::set<std::string> statesSet, std::string stateTyp
     os << "}\n";
 }
 
+void Automata::modifyInitialState(){
+    std::string state;
+    std::cout << "Ingresa el nuevo estado inicial: ";
+    std::cin >> state;
+    std::cin.ignore();
+    if(isValidState(state))
+        Automata::initialState = state;
+    else
+        throw std::runtime_error("El estado no es un estado valido");
+    
+}
+
+void Automata::addFinalState(){
+    std::string state;
+    std::cout << "Ingrese el nuevo estado final: ";
+    std::cin >> state;
+    std::cin.ignore();
+    if(isValidState(state))
+        Automata::finalStates.insert(state);
+    else
+        throw std::runtime_error("El estado no es un estado valido");
+}
+
+void Automata::addSymboltoAlphabet(){
+    char symbol;
+    std::cout << "Ingrese el nuevo simbolo: ";
+    std::cin >> symbol;
+    std::cin.ignore();
+    Automata::alphabet.insert(symbol);
+}
+
+bool Automata::isValidState(std::string state){
+    if(Automata::states.find(state) == Automata::states.end())
+        return false;
+    return true;
+}
+
+bool Automata::isValidFinalState(std::string state){
+    if(Automata::finalStates.find(state) == Automata::finalStates.end())
+        return false;
+    return true;
+}
+
+void Automata::deleteFinalState(){
+    std::string state;
+    std::cout << "Ingrese el estado final a eliminar: ";
+    std::cin >> state;
+    std::cin.ignore();
+    if(isValidFinalState(state))
+        Automata::finalStates.erase(state);
+    else
+        throw std::runtime_error("El estado no es un estado final");
+}
+
+void Automata::addTransition(){
+    std::string line;
+    std::vector<std::string> arr;
+    std::cout << "Inserte transicion:\n";
+    std::getline(std::cin, line);
+    std::pair<std::string, char> pair = cleanTransitionInput(line);
+    std::string newState = line.substr(line.find("=") + 2);
+    if(Automata::transitions.find(pair.first) == Automata::transitions.end()){
+        arr.push_back(newState);
+        Automata::transitions.insert({pair.first, {{pair.second, arr}}});
+        arr.clear();
+    }
+    else if(Automata::transitions.find(pair.first)->second.find(pair.second) == Automata::transitions.find(pair.first)->second.end()){
+        arr.push_back(newState);
+        Automata::transitions.find(pair.first)->second.insert({pair.second, arr});
+        arr.clear();
+    }
+    else{
+        Automata::transitions.find(pair.first)->second.find(pair.second)->second.push_back(newState);
+    }
+}
 
 void Automata_Manager::setFiles(){
     std::string content = readFile("Automata_manager.txt");

@@ -27,7 +27,8 @@ int main(int argc, char **argv){
         std::cout << "5. Crear automata\n";
         std::cout << "6. Guardar automata\n";
         std::cout << "7. Importar automata de arhcivo\n";
-        std::cout << "8. Administrador de automatas\n";
+        std::cout << "8. Modificar automata existente\n";
+        std::cout << "9. Administrador de automatas\n";
         std::cout << "Para salir presione q\n";
         std::cout << "Seleccionar opcion: ";
 
@@ -48,6 +49,7 @@ int main(int argc, char **argv){
             case '3':
                 std::cout << "Ingrese la cadena a analizar: ";
                 std::cin >> input;
+                std::cin.ignore();
                 visitedNodes =  automata.acceptWord(input);
                 printVisitedNodes(visitedNodes);
                 break;
@@ -81,6 +83,29 @@ int main(int argc, char **argv){
                 automata = buildAutomataFromFile(input);
                 break;
             case '8':
+                printModifyAutomataMenu();
+                std::cin >> opcion;
+                std::cin.ignore();
+                switch (opcion)
+                {
+                case '1':
+                    automata.addTransition();
+                    break;
+                case '2':
+                    automata.modifyInitialState();
+                    break;
+                case '3':
+                    automata.addFinalState();
+                    break;
+                case '4':
+                    automata.deleteFinalState();
+                    break;
+                case '5':
+                    automata.addSymboltoAlphabet();
+                    break;
+                }
+                break;
+            case '9':
                 std::cout << "Automatas construidos: \n";
                 manager.showFiles();
                 break;
@@ -90,5 +115,3 @@ int main(int argc, char **argv){
 
     return 0;
 };
-
-

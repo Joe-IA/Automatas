@@ -106,3 +106,12 @@ void savetoFile(std::string content, std::string outputFile){
     file << content;
 
 }
+void printModifyAutomataMenu(){
+    std::cout << "Modificaciones al automata:\n";
+    std::cout << "1. Agregar transicion\n";
+    std::cout << "2. Modificar estado inicial\n";
+    std::cout << "3. Agregar estado final\n";
+    std::cout << "4. Eliminar estado final\n";
+    std::cout << "5. Agregar simbolo al alphabet\n";
+    std::cout << "Ingrese opcion: ";
+}

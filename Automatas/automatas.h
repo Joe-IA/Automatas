@@ -25,6 +25,13 @@ struct Automata{
     std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>> findAmbiguousTransitions();
     std::vector<std::string> acceptWord(std::string word);
     void printStates(std::set<std::string> statesSet, std::string stateType, std::ostream & os);
+    void addTransition();
+    void modifyInitialState();
+    void addFinalState();
+    void deleteFinalState();
+    void addSymboltoAlphabet();
+    bool isValidState(std::string state);
+    bool isValidFinalState(std::string state);
 };
 
 struct Automata_Manager{

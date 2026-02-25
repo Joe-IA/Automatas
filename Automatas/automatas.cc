@@ -7,36 +7,36 @@
 #include "automatas.h"
 
 
-void Automata::printAlphabet(){
-    std::cout << "Alphabet: {";
+void Automata::printAlphabet(std::ostream & os){
+    os << "Alphabet: {";
     for(auto it = alphabet.begin(); it != alphabet.end(); ++it){
-        std::cout << *it;
+        os << *it;
         if(next(it) != alphabet.end())
-            std::cout << ", ";
+            os << ", ";
     }
-    std::cout << "}\n";
+    os << "}\n";
 }
 
-void Automata::printTransitions(){
-    std::cout << "δ: {\n";
+void Automata::printTransitions(std::ostream & os){
+    os << "δ: {\n";
     for(const auto &pair: transitions){
         std::string key = pair.first;
         for(const auto &stateChangePair: transitions[key]){
             char input = stateChangePair.first;
             for(const std::string &newState: stateChangePair.second){
-                std::cout << "T: (" << key << ", " << input << ") = " << newState << "\n";
+                os << "T: (" << key << ", " << input << ") = " << newState << "\n";
             }
         }
     }
-    std::cout << "}\n";
+    os << "}\n";
 }
 
-void Automata::describeAutomata(){
-    printStates(states, "Q");
-    printAlphabet();
-    printTransitions();
-    std::cout << "s: " << initialState << "\n";
-    printStates(finalStates, "F");
+void Automata::describeAutomata(std::ostream & os){
+    printStates(states, "Q", os);
+    printAlphabet(os);
+    printTransitions(os);
+    os << "s: " << initialState << "\n";
+    printStates(finalStates, "F", os);
 }
 
 std::string Automata::carryOutTransition(std::string currentState, char input){
@@ -120,12 +120,12 @@ std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>> A
     return ambiguosTransitions;
 }
 
-void Automata::printStates(std::set<std::string> statesSet, std::string stateType){
-    std::cout << stateType << ":  {";
+void Automata::printStates(std::set<std::string> statesSet, std::string stateType, std::ostream & os){
+    os << stateType << ":  {";
     for(auto it = statesSet.begin(); it != statesSet.end(); ++it){
-        std::cout << *it;
+        os << *it;
         if(next(it) != statesSet.end())
-            std::cout << ", ";
+            os << ", ";
     }
-    std::cout << "}\n";
+    os << "}\n";
 }

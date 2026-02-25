@@ -17,14 +17,14 @@ struct Automata{
     std::set<char> alphabet;
     std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>> transitions;
 
-    void printTransitions();
-    void printAlphabet();
-    void describeAutomata();
+    void printTransitions(std::ostream & os);
+    void printAlphabet(std::ostream & os);
+    void describeAutomata(std::ostream & os);
     std::string carryOutTransition(std::string currentState, char input);
     bool isAutomataND();
     std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>> findAmbiguousTransitions();
     std::vector<std::string> acceptWord(std::string word);
-    void printStates(std::set<std::string> statesSet, std::string stateType);
+    void printStates(std::set<std::string> statesSet, std::string stateType, std::ostream & os);
 };
 
 #endif

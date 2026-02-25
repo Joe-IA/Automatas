@@ -1,0 +1,17 @@
+#ifndef STREAMS_H
+#define STREAMS_H
+
+#include <utility>
+#include <string>
+#include <set>
+#include <string>
+#include <vector>
+#include "automatas.h"
+
+std::pair<std::string, char> cleanTransitionInput(std::string input);
+std::vector<std::string> cleanCSInput(std::string input);
+void printVisitedNodes(std::vector<std::string> nodes);
+void printAmbiguousTransitions(std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>>transitions);
+std::string readFile(std::string name);
+void saveAutomatatoFile(Automata automata, std::string ouputFile);
+#endif

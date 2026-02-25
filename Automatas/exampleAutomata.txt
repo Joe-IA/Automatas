@@ -1,0 +1,7 @@
+Q:  {q0, q1, q2, q3}
+Alphabet: {a, b, c}
+δ: {
+T: (q0, a) = q3
+}
+s: q0
+F:  {q4}

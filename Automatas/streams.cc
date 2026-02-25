@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "streams.h"
 
 std::pair<std::string, char> cleanTransitionInput(std::string input){
@@ -34,6 +35,13 @@ std::vector<std::string> cleanCSInput(std::string input){
     }
     values.push_back(nextValue);
     return values;
+}
+
+std::string cleansetNotation(std::string input){
+    size_t start = input.find("{") + 1;
+    std::string substring = input.substr(start);
+    substring.pop_back();
+    return substring;
 }
 
 
@@ -72,7 +80,15 @@ std::string readFile(std::string name){
     }
     return content;
 }
-
+std::vector<std::string> splitlines(const std::string &text){
+    std::vector<std::string> lines;
+    std::stringstream ss(text);
+    std::string line;
+    while(std::getline(ss, line, '\n')){
+        lines.push_back(line);
+    }
+    return lines;
+}
 void saveAutomatatoFile(Automata automata, std::string outputFile){
     std::fstream file;
     file.open(outputFile.c_str(), std::ios::out);

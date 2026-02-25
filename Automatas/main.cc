@@ -24,6 +24,7 @@ int main(int argc, char **argv){
         std::cout << "4. Verificar si es AFD o AFND\n";
         std::cout << "5. Crear automata\n";
         std::cout << "6. Guardar automata\n";
+        std::cout << "7. Importar automata de arhcivo\n";
         std::cout << "Para salir presione q\n";
         std::cout << "Seleccionar opcion: ";
 
@@ -65,6 +66,11 @@ int main(int argc, char **argv){
             case '6':
                 saveAutomatatoFile(automata, "exampleAutomata.txt");
             break;
+            case '7':
+                std::cout << "File name: ";
+                std::cin >> input;
+                automata = buildAutomataFromFile(input);
+                break;
         }
         std::cout << "\n\n";
     }

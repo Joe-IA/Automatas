@@ -10,8 +10,10 @@
 
 std::pair<std::string, char> cleanTransitionInput(std::string input);
 std::vector<std::string> cleanCSInput(std::string input);
+std::string cleansetNotation(std::string input);
 void printVisitedNodes(std::vector<std::string> nodes);
 void printAmbiguousTransitions(std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>>transitions);
 std::string readFile(std::string name);
 void saveAutomatatoFile(Automata automata, std::string ouputFile);
+std::vector<std::string> splitlines(const std::string &text);
 #endif

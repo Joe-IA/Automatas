@@ -31,8 +31,18 @@ Automata buildAutomataFromTerminal(){
     return automata;
 }
 
-Automata buildAutomataFromFile(){
+Automata buildAutomataFromFile(std::string fileName){
     Automata automata;
+    std::string fileContent = readFile(fileName);
+    std::vector<std::string> lines = splitlines(fileContent);
+    automata.states = buildStateSet(lines[0]);
+    automata.alphabet = buildAlphabetSet(lines[1]);
+    size_t counter = 3;
+    auto [transitions, newCounter] = buildTransitionMap(counter, lines);
+    automata.transitions = transitions;
+    automata.initialState = lines[newCounter].substr(3);
+    newCounter++;
+    automata.finalStates = buildStateSet(lines[newCounter]);
     return automata;
 }
 
@@ -66,4 +76,49 @@ std::set<char> getAlphabet(){
     }
     return alphabet;
 
+}
+
+std::set<std::string> buildStateSet(std::string stateString){
+    std::vector<std::string> stateList;
+    stateString = cleansetNotation(stateString);
+    stateList = cleanCSInput(stateString);
+    std::set<std::string> stateSet(stateList.begin(), stateList.end());
+    return stateSet;
+}
+
+std::set<char> buildAlphabetSet(std::string alphabetString){
+    std::vector<std::string> alphabetList;
+    std::set<char> alphabetSet;
+    alphabetString = cleansetNotation(alphabetString);
+    alphabetList = cleanCSInput(alphabetString);
+    for(const std::string &str : alphabetList){
+        alphabetSet.insert(str[0]);
+    }
+    return alphabetSet;
+}
+
+std::pair<std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>>, size_t> buildTransitionMap(size_t counter, std::vector<std::string> lines){
+    std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>> transitions;
+    std::vector<std::string> arr;
+    while(lines[counter] != "}"){
+        std::string currentLine = lines[counter];
+        std::pair<std::string, char> pair = cleanTransitionInput(currentLine);
+        std::string newState = currentLine.substr(currentLine.find("=") + 2);
+        if(transitions.find(pair.first) == transitions.end()){
+            arr.push_back(newState);
+            transitions.insert({pair.first, {{pair.second, arr}}});
+            arr.clear();
+        }
+        else if(transitions.find(pair.first)->second.find(pair.second) == transitions.find(pair.first)->second.end()){
+            arr.push_back(newState);
+            transitions.find(pair.first)->second.insert({pair.second, arr});
+            arr.clear();
+        }
+        else{
+            transitions.find(pair.first)->second.find(pair.second)->second.push_back(newState);
+        }
+        counter++;
+    }
+    counter++;
+    return {transitions, counter};
 }

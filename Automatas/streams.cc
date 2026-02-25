@@ -13,7 +13,8 @@ std::pair<std::string, char> cleanTransitionInput(std::string input){
     size_t comma = input.find(",");
 
     std::string state = input.substr(start, comma - start);
-    std::string symbol = input.substr(comma + 2, comma + 3);
+    size_t end = input.find(")");
+    std::string symbol = input.substr(comma + 2, end - (comma + 2));
     if (symbol == "\" \""){
         symbol = " ";
     }

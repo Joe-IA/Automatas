@@ -11,6 +11,8 @@
 int main(int argc, char **argv){
 
     Automata automata;
+    Automata_Manager manager;
+    manager.setFiles();
     char opcion,tInput;
     std::string input, state;
     std::vector<std::string> visitedNodes;
@@ -25,6 +27,7 @@ int main(int argc, char **argv){
         std::cout << "5. Crear automata\n";
         std::cout << "6. Guardar automata\n";
         std::cout << "7. Importar automata de arhcivo\n";
+        std::cout << "8. Administrador de automatas\n";
         std::cout << "Para salir presione q\n";
         std::cout << "Seleccionar opcion: ";
 
@@ -64,12 +67,22 @@ int main(int argc, char **argv){
                 automata = buildAutomataFromTerminal();
                 break;
             case '6':
-                saveAutomatatoFile(automata, "exampleAutomata.txt");
-            break;
-            case '7':
-                std::cout << "File name: ";
+                std::cout << "Archivo de salida: ";
                 std::cin >> input;
+                std::cin.ignore();
+                saveAutomatatoFile(automata, input);
+                manager.files.push_back(input);
+                manager.saveFiles();
+                break;
+            case '7':
+                std::cout << "Nombre del archivo: ";
+                std::cin >> input;
+                std::cin.ignore();
                 automata = buildAutomataFromFile(input);
+                break;
+            case '8':
+                std::cout << "Automatas construidos: \n";
+                manager.showFiles();
                 break;
         }
         std::cout << "\n\n";

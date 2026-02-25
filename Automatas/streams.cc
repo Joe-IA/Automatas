@@ -96,3 +96,12 @@ void saveAutomatatoFile(Automata automata, std::string outputFile){
         throw std::runtime_error("Couldn't create the file");
     automata.describeAutomata(file);
 }
+
+void savetoFile(std::string content, std::string outputFile){
+    std::fstream file;
+    file.open(outputFile.c_str(), std::ios::out);
+    if(!file)
+        throw std::runtime_error("Couldn't create the file");
+    file << content;
+
+}

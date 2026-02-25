@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 #include "automatas.h"
+#include "streams.h"
 
 
 void Automata::printAlphabet(std::ostream & os){
@@ -128,4 +129,25 @@ void Automata::printStates(std::set<std::string> statesSet, std::string stateTyp
             os << ", ";
     }
     os << "}\n";
+}
+
+
+void Automata_Manager::setFiles(){
+    std::string content = readFile("Automata_manager.txt");
+    Automata_Manager::files = splitlines(content);
+}
+
+void Automata_Manager::saveFiles(){
+    std::string contents  = "";
+    for(const std::string &file : Automata_Manager::files){
+        contents += file;
+        contents.push_back('\n');
+    }
+    savetoFile(contents, "Automata_manager.txt");
+}
+
+void Automata_Manager::showFiles(){
+    for(const std::string &file: Automata_Manager::files){
+        std::cout << file << "\n";
+    }
 }

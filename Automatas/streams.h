@@ -16,4 +16,5 @@ void printAmbiguousTransitions(std::vector<std::pair<std::pair<std::string, char
 std::string readFile(std::string name);
 void saveAutomatatoFile(Automata automata, std::string ouputFile);
 std::vector<std::string> splitlines(const std::string &text);
+void savetoFile(std::string content, std::string outputFile);
 #endif

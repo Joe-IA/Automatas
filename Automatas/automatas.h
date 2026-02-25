@@ -27,4 +27,11 @@ struct Automata{
     void printStates(std::set<std::string> statesSet, std::string stateType, std::ostream & os);
 };
 
+struct Automata_Manager{
+    std::vector<std::string> files;
+    void setFiles();
+    void saveFiles();
+    void showFiles();
+};
+
 #endif

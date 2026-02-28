@@ -20,8 +20,9 @@ Automata buildAutomataFromTerminal(){
     automata.finalStates = getStates();
     do {
         std::cout << "Ingresar transición: \n";
-        std::pair<std::string, std::unordered_map<char, std::vector<std::string>>> transition = getTransition();
-        automata.transitions.insert({{transition.first, transition.second}});
+        auto [state, in, newStatesList] = getTransition();
+        std::pair<std::string, char> pair = {state, in};
+        insertTransitiontoMap(automata.transitions, pair, newStatesList);
         std::cout << "Transición registrada, ¿Ingresar otra transición? (y | n): ";
         std::cin >> input;
         std::cin.ignore();
@@ -54,15 +55,13 @@ std::set<std::string> getStates(){
     return statesSet;    
 }
 
-std::pair<std::string, std::unordered_map<char, std::vector<std::string>>> getTransition(){
-    std::pair<std::string, std::unordered_map<char, std::vector<std::string>>> output;
+std::tuple<std::string, char, std::vector<std::string>> getTransition(){
     std::string transition;
     std::getline(std::cin, transition);
     std::pair<std::string, char> input = cleanTransitionInput(transition);
     std::string substring = transition.substr(transition.find("=") + 2);
     std::vector<std::string> transitionsList = cleanCSInput(substring);
-    std::unordered_map<char, std::vector<std::string>> map = {{input.second, transitionsList}};
-    return {input.first, map};
+    return {input.first, input.second, transitionsList};
 }
 
 std::set<char> getAlphabet(){
@@ -97,28 +96,30 @@ std::set<char> buildAlphabetSet(std::string alphabetString){
     return alphabetSet;
 }
 
-std::pair<std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>>, size_t> buildTransitionMap(size_t counter, std::vector<std::string> lines){
-    std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>> transitions;
-    std::vector<std::string> arr;
+std::pair<TransitionMap, size_t> buildTransitionMap(size_t counter, std::vector<std::string> lines){
+    TransitionMap transitions;
     while(lines[counter] != "}"){
         std::string currentLine = lines[counter];
         std::pair<std::string, char> pair = cleanTransitionInput(currentLine);
         std::string newState = currentLine.substr(currentLine.find("=") + 2);
-        if(transitions.find(pair.first) == transitions.end()){
-            arr.push_back(newState);
-            transitions.insert({pair.first, {{pair.second, arr}}});
-            arr.clear();
-        }
-        else if(transitions.find(pair.first)->second.find(pair.second) == transitions.find(pair.first)->second.end()){
-            arr.push_back(newState);
-            transitions.find(pair.first)->second.insert({pair.second, arr});
-            arr.clear();
-        }
-        else{
-            transitions.find(pair.first)->second.find(pair.second)->second.push_back(newState);
-        }
+        insertTransitiontoMap(transitions, pair, {newState});
         counter++;
     }
     counter++;
     return {transitions, counter};
+}
+
+void insertTransitiontoMap(TransitionMap &transitions, std::pair<std::string, char> pair, std::vector<std::string> newStates){
+    if(transitions.find(pair.first) == transitions.end()){
+        transitions.insert({pair.first, {{pair.second, newStates}}});
+    }
+    else if(transitions.find(pair.first)->second.find(pair.second) == transitions.find(pair.first)->second.end()){
+        transitions.find(pair.first)->second.insert({pair.second, newStates});
+    }
+    else{
+        for(const std::string newState: newStates){
+            transitions.find(pair.first)->second.find(pair.second)->second.push_back(newState);
+        }
+    }
+        
 }

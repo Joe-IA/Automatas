@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 #include "automatas.h"
+#include "automataCreator.h"
 #include "streams.h"
 
 
@@ -187,24 +188,11 @@ void Automata::deleteFinalState(){
 
 void Automata::addTransition(){
     std::string line;
-    std::vector<std::string> arr;
     std::cout << "Inserte transicion:\n";
     std::getline(std::cin, line);
     std::pair<std::string, char> pair = cleanTransitionInput(line);
     std::string newState = line.substr(line.find("=") + 2);
-    if(Automata::transitions.find(pair.first) == Automata::transitions.end()){
-        arr.push_back(newState);
-        Automata::transitions.insert({pair.first, {{pair.second, arr}}});
-        arr.clear();
-    }
-    else if(Automata::transitions.find(pair.first)->second.find(pair.second) == Automata::transitions.find(pair.first)->second.end()){
-        arr.push_back(newState);
-        Automata::transitions.find(pair.first)->second.insert({pair.second, arr});
-        arr.clear();
-    }
-    else{
-        Automata::transitions.find(pair.first)->second.find(pair.second)->second.push_back(newState);
-    }
+    insertTransitiontoMap(Automata::transitions, pair, {newState});
 }
 
 void Automata_Manager::setFiles(){

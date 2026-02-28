@@ -9,13 +9,14 @@
 #include <utility>
 #include <vector>
 
+typedef std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>> TransitionMap;
 
 struct Automata{
     std::set<std::string> states;
     std::set<std::string> finalStates;
     std::string initialState;
     std::set<char> alphabet;
-    std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>> transitions;
+    TransitionMap transitions;
 
     void printTransitions(std::ostream & os);
     void printAlphabet(std::ostream & os);

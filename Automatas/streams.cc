@@ -47,7 +47,6 @@ std::string cleansetNotation(std::string input){
 
 
 void printVisitedNodes(std::vector<std::string> nodes){
-    std::cout << "Estados recorridos: \n";
     for (int i = 0; i < nodes.size(); ++i){
         std::cout << nodes[i];
         if(i < nodes.size() - 1)
@@ -113,5 +112,6 @@ void printModifyAutomataMenu(){
     std::cout << "3. Agregar estado final\n";
     std::cout << "4. Eliminar estado final\n";
     std::cout << "5. Agregar simbolo al alphabet\n";
+    std::cout << "6. Eliminar Transicion\n";
     std::cout << "Ingrese opcion: ";
 }

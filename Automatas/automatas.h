@@ -21,10 +21,10 @@ struct Automata{
     void printTransitions(std::ostream & os);
     void printAlphabet(std::ostream & os);
     void describeAutomata(std::ostream & os);
-    std::string carryOutTransition(std::string currentState, char input);
+    std::vector<std::string> carryOutTransition(std::string currentState, char input);
     bool isAutomataND();
     std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>> findAmbiguousTransitions();
-    std::vector<std::string> acceptWord(std::string word);
+    void acceptWord(std::string word);
     void printStates(std::set<std::string> statesSet, std::string stateType, std::ostream & os);
     void addTransition();
     void modifyInitialState();
@@ -33,6 +33,8 @@ struct Automata{
     void addSymboltoAlphabet();
     bool isValidState(std::string state);
     bool isValidFinalState(std::string state);
+    std::vector<std::string> generateWords();
+    void deleteTransition();
 };
 
 struct Automata_Manager{

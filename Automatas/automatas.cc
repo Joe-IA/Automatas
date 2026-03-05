@@ -3,10 +3,12 @@
 #include <unordered_map>
 #include <string>
 #include <utility>
+#include <queue>
 #include <vector>
 #include "automatas.h"
 #include "automataCreator.h"
 #include "streams.h"
+#include "generateChains.h"
 
 
 void Automata::printAlphabet(std::ostream & os){
@@ -41,52 +43,64 @@ void Automata::describeAutomata(std::ostream & os){
     printStates(finalStates, "F", os);
 }
 
-std::string Automata::carryOutTransition(std::string currentState, char input){
-        if(isAutomataND())
-            return "No deterministic automata";
-        
-        auto it = transitions.find(currentState);
-        if(it == transitions.end())
-            return "Non existing transition";
-        auto pair = *it;
-        auto it_ = pair.second.find(input);
-        if (it_ == pair.second.end())
-            return "Non existing transition";
-        return it_->second.at(0);
+std::vector<std::string> Automata::carryOutTransition(std::string currentState, char input){
+    auto it = transitions.find(currentState);
+    if(it == transitions.end())
+        return {};
+
+    auto it_ = it->second.find(input);
+    if(it_ == it->second.end())
+        return {};
+
+    return it_->second;
 }
 
 
-
-std::vector<std::string> Automata::acceptWord(std::string word){
-    std::string currentState = initialState, nextState, currentString = "", finalExplanation = "";
+void Automata::acceptWord(std::string word){
+    std::string currentState = initialState;
+    std::string currentString = "", finalExplanation = "";
     bool error = false;
+
     std::vector<std::string> visitedNodes;
-    std::cout << "Estado inicial: " << currentState << "\n";
+    std::vector<std::string> nextStates;
+
     std::cout << "Analizar cadena: " << word << "\n";
-    std::cout << "-----\n";
+
     visitedNodes.push_back(currentState);
-    for(const char &c: word){
-        nextState = carryOutTransition(currentState, c);
-        std::cout << "Estado actual: " << currentState << "\n";
-        std::cout << "Entrada: " << c << "\n";
+
+    for(const char &c : word){
+
+        currentString.push_back(c);
+        std::cout << currentString << ":\n";
+
         if(alphabet.find(c) == alphabet.end()){
             finalExplanation = "Alfabeto no reconocido: Cadena rechazada";
             error = true;
             break;
         }
-        if(nextState == "Non existing transition"){
+
+        nextStates = carryOutTransition(currentState, c);
+
+        if(nextStates.empty()){
             finalExplanation = "Transicion invalida: cadena rechazada";
             error = true;
             break;
         }
-        std::cout << "Estado Destino: " << nextState << "\n";
+        if(nextStates.size() > 1){
+            for(const auto &state : nextStates){
+                std::cout << currentState << "->" << state << "\n";
+            }
+            std::cout << "\n";
+        }
+
+        std::string nextState = nextStates[0];
+
         currentState = nextState;
         visitedNodes.push_back(currentState);
-        currentString.push_back(c);
-        std::cout << "Cadena Actual: " << currentString << "\n";
-        std::cout << "----\n";
+
+        printVisitedNodes(visitedNodes);
     }
-    std::cout << "-----\n";
+
     if(!error){
         if(finalStates.find(currentState) != finalStates.end()){
             finalExplanation = currentState + " es un estado final: Cadena aceptada";
@@ -95,8 +109,8 @@ std::vector<std::string> Automata::acceptWord(std::string word){
             finalExplanation = currentState + " no es un estado final: Cadena Rechazada";
         }
     }
-    std::cout << "Cadena: " << '"' << word << '"' << " analizada, " << finalExplanation << "\n";
-    return visitedNodes;
+
+    std::cout << "Cadena: \"" << word << "\" analizada, " << finalExplanation << "\n";
 }
 
 bool Automata::isAutomataND(){
@@ -115,8 +129,8 @@ std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>> A
     for(const auto &[key, value]: transitions){
         for(const auto &[input, trans]: transitions.find(key)->second){
             innerPair = {key, input};
-            if(transitions.size() > 1)  
-            ambiguosTransitions.push_back({innerPair, trans});
+            if(trans.size() > 1)  
+                ambiguosTransitions.push_back({innerPair, trans});
         }
     }
     return ambiguosTransitions;
@@ -175,6 +189,16 @@ bool Automata::isValidFinalState(std::string state){
     return true;
 }
 
+void Automata::deleteTransition(){
+    std::string input;
+    std::cout << "Inserta transicion a eliminar:\n";
+    std::getline(std::cin, input);
+    std::pair<std::string, char> pair = cleanTransitionInput(input);
+    std::string newState = input.substr(input.find("=") + 2);
+    std::vector<std::string> &dic = Automata::transitions.find(pair.first)->second.find(pair.second)->second;
+    dic.erase(std::remove(dic.begin(), dic.end(), newState), dic.end());
+}
+
 void Automata::deleteFinalState(){
     std::string state;
     std::cout << "Ingrese el estado final a eliminar: ";
@@ -184,6 +208,33 @@ void Automata::deleteFinalState(){
         Automata::finalStates.erase(state);
     else
         throw std::runtime_error("El estado no es un estado final");
+}
+
+
+std::vector<std::string> Automata::generateWords(){
+    std::unordered_map<std::string,int> visits;
+    std::vector<std::string> results;
+    for (auto& [state, trans] : transitions) {
+        states.insert(state);
+
+        for (auto& [c, nextStates] : trans) {
+            for (auto& s : nextStates)
+                states.insert(s);
+        }
+    }
+    for (auto& s : states)
+        visits[s] = 0;
+
+    backtrack(
+        Automata::initialState,
+        Automata::transitions,
+        visits,
+        Automata::finalStates,
+        "",
+        results
+    );
+
+    return results;
 }
 
 void Automata::addTransition(){

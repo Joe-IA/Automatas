@@ -16,6 +16,7 @@ int main(int argc, char **argv){
     char opcion,tInput;
     std::string input, state;
     std::vector<std::string> visitedNodes;
+    std::vector<std::string> trans;
     std::pair<std::string, char> cleanInput;
 
     while(true){
@@ -29,6 +30,7 @@ int main(int argc, char **argv){
         std::cout << "7. Importar automata de arhcivo\n";
         std::cout << "8. Modificar automata existente\n";
         std::cout << "9. Administrador de automatas\n";
+        std::cout << "0. Generar palabras\n";
         std::cout << "Para salir presione q\n";
         std::cout << "Seleccionar opcion: ";
 
@@ -44,14 +46,16 @@ int main(int argc, char **argv){
                 std::cout << "Ingresar transición: ";
                 std::getline(std::cin, input);
                 cleanInput = cleanTransitionInput(input);
-                std::cout << input << " = " << automata.carryOutTransition(cleanInput.first, cleanInput.second) << "\n";
+                trans = automata.carryOutTransition(cleanInput.first, cleanInput.second);
+                for(int i = 0; i < trans.size(); ++i){
+                    std::cout << input << " = " << trans[i] << "\n";
+                }
                 break;
             case '3':
                 std::cout << "Ingrese la cadena a analizar: ";
                 std::cin >> input;
                 std::cin.ignore();
-                visitedNodes =  automata.acceptWord(input);
-                printVisitedNodes(visitedNodes);
+                automata.acceptWord(input);
                 break;
             case '4':
                 automata.describeAutomata(std::cout);
@@ -103,12 +107,24 @@ int main(int argc, char **argv){
                 case '5':
                     automata.addSymboltoAlphabet();
                     break;
+                case '6':
+                    automata.deleteTransition();
+                    break;
                 }
+
                 break;
             case '9':
                 std::cout << "Automatas construidos: \n";
                 manager.showFiles();
                 break;
+            case '0':
+                auto words = automata.generateWords();
+                std::cout << "Palabras\n";
+                for(const auto &word: words){
+                    std::cout << word << "\n";
+                }
+                break;
+            
         }
         std::cout << "\n\n";
     }

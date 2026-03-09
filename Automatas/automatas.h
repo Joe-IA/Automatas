@@ -35,6 +35,10 @@ struct Automata{
     bool isValidFinalState(std::string state);
     std::vector<std::string> generateWords();
     void deleteTransition();
+    bool explore(std::string currentState, const std::string& word, int index, 
+    std::vector<std::string>& path, int& furthestIndex, std::string& lastState,
+    std::vector<std::string>& bestPath);
+    void printWordConstruction(const std::string& word, const std::vector<std::string>& path);
 };
 
 struct Automata_Manager{

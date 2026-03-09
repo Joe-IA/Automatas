@@ -56,61 +56,70 @@ std::vector<std::string> Automata::carryOutTransition(std::string currentState, 
 }
 
 
-void Automata::acceptWord(std::string word){
-    std::string currentState = initialState;
-    std::string currentString = "", finalExplanation = "";
-    bool error = false;
-
-    std::vector<std::string> visitedNodes;
-    std::vector<std::string> nextStates;
-
+void Automata::acceptWord(std::string word) {
     std::cout << "Analizar cadena: " << word << "\n";
 
-    visitedNodes.push_back(currentState);
+    std::vector<std::string> path;
+    path.push_back(initialState);
 
-    for(const char &c : word){
+    int furthestIndex = -1;
+    std::string lastState;
+    std::vector<std::string> bestPath;
+    bool isaccepted = explore(initialState, word, 0, path, furthestIndex, lastState, bestPath);
+    printWordConstruction(word, bestPath);
 
-        currentString.push_back(c);
-        std::cout << currentString << ":\n";
+    if (!isaccepted) {
+        std::cout << "\nResultado: Cadena rechazada.\n";
+        std::cout << lastState << " no es un estado final\n";
+    }
+    else {
+        std::cout << "Estado final alcanzado: " << lastState << "\n";
+        std::cout << "Resultado: Cadena Aceptada!\n";
+    }
+}
 
-        if(alphabet.find(c) == alphabet.end()){
-            finalExplanation = "Alfabeto no reconocido: Cadena rechazada";
-            error = true;
-            break;
-        }
+bool Automata::explore(std::string currentState,
+                       const std::string& word,
+                       int index,
+                       std::vector<std::string>& path,
+                       int& furthestIndex,
+                       std::string& lastState,
+                       std::vector<std::string>& bestPath) {
 
-        nextStates = carryOutTransition(currentState, c);
-
-        if(nextStates.empty()){
-            finalExplanation = "Transicion invalida: cadena rechazada";
-            error = true;
-            break;
-        }
-        if(nextStates.size() > 1){
-            for(const auto &state : nextStates){
-                std::cout << currentState << "->" << state << "\n";
-            }
-            std::cout << "\n";
-        }
-
-        std::string nextState = nextStates[0];
-
-        currentState = nextState;
-        visitedNodes.push_back(currentState);
-
-        printVisitedNodes(visitedNodes);
+    if (index > furthestIndex) {
+        furthestIndex = index;
+        lastState = currentState;
+        bestPath = path;
     }
 
-    if(!error){
-        if(finalStates.find(currentState) != finalStates.end()){
-            finalExplanation = currentState + " es un estado final: Cadena aceptada";
-        }
-        else{
-            finalExplanation = currentState + " no es un estado final: Cadena Rechazada";
-        }
+    if (index == word.length()) {
+        if (isValidFinalState(currentState)) 
+            return true;
+        
+        return false;
     }
 
-    std::cout << "Cadena: \"" << word << "\" analizada, " << finalExplanation << "\n";
+    char c = word[index];
+
+    if (alphabet.find(c) == alphabet.end()) {
+        std::cout << "Error: simbolo '" << c << "' no pertenece al alfabeto.\n";
+        return false;
+    }
+
+    std::vector<std::string> nextStates = carryOutTransition(currentState, c);
+
+    for (const std::string& nextState : nextStates) {
+
+        path.push_back(nextState);
+
+        if (explore(nextState, word, index + 1, path, furthestIndex, lastState, bestPath)) 
+            return true;
+        
+
+        path.pop_back();
+    }
+
+    return false;
 }
 
 bool Automata::isAutomataND(){
@@ -244,6 +253,41 @@ void Automata::addTransition(){
     std::pair<std::string, char> pair = cleanTransitionInput(line);
     std::string newState = line.substr(line.find("=") + 2);
     insertTransitiontoMap(Automata::transitions, pair, {newState});
+}
+
+void Automata::printWordConstruction(const std::string& word, const std::vector<std::string>& path){
+        std::string partial = "";
+
+    for (int i = 1; i < path.size(); i++) {
+
+        partial += word[i - 1];
+        char symbol = word[i - 1];
+
+        std::string from = path[i - 1];
+        std::string to = path[i];
+
+        std::cout << "\n" << partial << ":\n";
+
+        std::vector<std::string> possible = carryOutTransition(from, symbol);
+        if (possible.size() > 1) {
+            for (const auto& s : possible) {
+                std::cout << from << "->" << s;
+                std::cout << "\n";
+            }
+
+            continue;
+        }
+
+        for (int j = 0; j <= i; j++) {
+
+            std::cout << path[j];
+
+            if (j < i)
+                std::cout << "->";
+        }
+
+        std::cout << "\n";
+    }
 }
 
 void Automata_Manager::setFiles(){

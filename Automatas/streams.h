@@ -14,7 +14,7 @@ std::string cleansetNotation(std::string input);
 void printVisitedNodes(std::vector<std::string> nodes);
 void printAmbiguousTransitions(std::vector<std::pair<std::pair<std::string, char>, std::vector<std::string>>>transitions);
 std::string readFile(std::string name);
-void saveAutomatatoFile(Automata automata, std::string ouputFile);
+void saveAutomatatoFile(Automata &automata, std::string ouputFile);
 std::vector<std::string> splitlines(const std::string &text);
 void savetoFile(std::string content, std::string outputFile);
 void printModifyAutomataMenu();

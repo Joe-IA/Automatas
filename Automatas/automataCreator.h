@@ -10,13 +10,17 @@
 #include <vector>
 #include "automatas.h"
 
-Automata buildAutomataFromFile(std::string fileName);
-Automata buildAutomataFromTerminal();
+FSAutomata buildFSAutomataFromFile(std::string fileName);
+FSAutomata buildFSAutomataFromTerminal();
+StackAutomata buildStackAutomataFromTerminal();
+StackAutomata buildStackAutomataFromFile(std::string fileName);
 std::set<std::string> getStates();
-std::tuple<std::string, char, std::vector<std::string>> getTransition();
+std::tuple<std::string, char, std::vector<std::string>> getTransitionFS();
+std::tuple<std::string, char, char, std::string, std::string> getTransitionSA();
 std::set<char> getAlphabet();
 std::set<std::string> buildStateSet(std::string stateString);
 std::set<char> buildAlphabetSet(std::string alphabetString);
 std::pair<TransitionMap, size_t> buildTransitionMap(size_t counter, std::vector<std::string> lines);
 void insertTransitiontoMap(TransitionMap &transitions, std::pair<std::string, char> pair, std::vector<std::string> newState);
+TransitionMapSA buildTransitionVector(uint8_t counter, std::vector<std::string> lines);
 #endif

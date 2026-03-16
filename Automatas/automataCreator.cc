@@ -4,46 +4,45 @@
 #include "automataCreator.h"
 #include "streams.h"
 
-Automata buildAutomataFromTerminal(){
-    Automata automata;
+FSAutomata buildFSAutomataFromTerminal(){
+    FSAutomata automata;
 
     std::string nodes, input = "";
     std::cout << "Creando automata...\n";
     std::cout << "Ingresar estados: \n";
-    automata.states = getStates();
+    automata.setStates(getStates());
     std::cout << "Ingresar alfabeto:\n";
-    automata.alphabet = getAlphabet();
+    automata.setAlphabet(getAlphabet());
     std::cout << "Ingresar nodo inicial s: \n";
-    std::cin >> automata.initialState;
+    std::cin >> input;
     std::cin.ignore();
+    automata.setInitialState(input);
     std::cout << "Ingresar nodo(s) finales: \n";
-    automata.finalStates = getStates();
+    automata.setFinalStates(getStates());
     do {
         std::cout << "Ingresar transición: \n";
-        auto [state, in, newStatesList] = getTransition();
+        auto [state, in, newStatesList] = getTransitionFS();
         std::pair<std::string, char> pair = {state, in};
-        insertTransitiontoMap(automata.transitions, pair, newStatesList);
+        insertTransitiontoMap(automata.getTransitions(), pair, newStatesList);
         std::cout << "Transición registrada, ¿Ingresar otra transición? (y | n): ";
         std::cin >> input;
         std::cin.ignore();
-        if(input == "n")
-            break;
-    } while(true);
+    } while(input != "n");
     return automata;
 }
 
-Automata buildAutomataFromFile(std::string fileName){
-    Automata automata;
+FSAutomata buildFSAutomataFromFile(std::string fileName){
+    FSAutomata automata;
     std::string fileContent = readFile(fileName);
     std::vector<std::string> lines = splitlines(fileContent);
-    automata.states = buildStateSet(lines[0]);
-    automata.alphabet = buildAlphabetSet(lines[1]);
+    automata.setStates(buildStateSet(lines[0]));
+    automata.setAlphabet(buildAlphabetSet(lines[1]));
     size_t counter = 3;
     auto [transitions, newCounter] = buildTransitionMap(counter, lines);
-    automata.transitions = transitions;
-    automata.initialState = lines[newCounter].substr(3);
+    automata.setTransitions(transitions);
+    automata.setInitialState(lines[newCounter].substr(3));
     newCounter++;
-    automata.finalStates = buildStateSet(lines[newCounter]);
+    automata.setFinalStates(buildStateSet(lines[newCounter]));
     return automata;
 }
 
@@ -55,7 +54,7 @@ std::set<std::string> getStates(){
     return statesSet;    
 }
 
-std::tuple<std::string, char, std::vector<std::string>> getTransition(){
+std::tuple<std::string, char, std::vector<std::string>> getTransitionFS(){
     std::string transition;
     std::getline(std::cin, transition);
     std::pair<std::string, char> input = cleanTransitionInput(transition);
@@ -121,5 +120,62 @@ void insertTransitiontoMap(TransitionMap &transitions, std::pair<std::string, ch
             transitions.find(pair.first)->second.find(pair.second)->second.push_back(newState);
         }
     }
-        
+}
+
+StackAutomata buildStackAutomataFromFile(std::string fileName){
+    StackAutomata automata;
+    std::string fileContent = readFile(fileName);
+    std::vector<std::string> lines = splitlines(fileContent);
+    automata.setAlphabet(buildAlphabetSet(lines[0]));
+    automata.setStackAlphabet(buildAlphabetSet(lines[1]));
+    automata.setStates(buildStateSet(lines[2]));
+    automata.setStackSymbol(lines[3].substr(3)[0]);
+    automata.setInitialState(lines[4].substr(3));
+    automata.setFinalStates(buildStateSet(lines[5]));
+    automata.setTransitions(buildTransitionVector(6, lines));
+    return automata;
+}
+
+StackAutomata buildStackAutomataFromTerminal(){
+    StackAutomata automata;
+    std::string nodes, input;
+    std::cout << "Creando automata de pila... \n";
+    std::cout << "Ingresar estados: \n";
+    automata.setStates(getStates());
+    std::cout << "Ingresar alfabeto: \n";
+    automata.setAlphabet(getAlphabet());
+    std::cout << "Ingresar alfabeto de pila: \n";
+    automata.setStackAlphabet(getAlphabet());
+    std::cout << "Ingresar simbolo de pila: ";
+    std::cin >> input;
+    automata.setStackSymbol(input[0]);
+    std::cin.ignore();
+    std::cout << "Ingresar estado inicial: ";
+    std::cin >> input;
+    std::cin.ignore();
+    automata.setInitialState(input);
+    std::cout << "Ingresar estados finales:\n";
+    automata.setFinalStates(getStates());
+    do{
+        std::cout << "Ingresar transición: \n";
+        automata.getTransitions().push_back(getTransitionSA());
+        std::cout << "Transición registrada, ¿Ingresar otra transición? (y | n): ";
+        std::cin >> input;
+        std::cin.ignore();
+    } while(input != "n");
+    return automata;
+}
+
+std::tuple<std::string, char, char, std::string, std::string> getTransitionSA(){
+    std::string transition;
+    std::getline(std::cin, transition);
+    std::vector<std::string> tP = cleanCSInput(transition);
+    return {tP[0], tP[1][0], tP[2][0], tP[3], tP[4]};
+}
+
+TransitionMapSA buildTransitionVector(uint8_t counter, std::vector<std::string> lines){
+    TransitionMapSA transitions;
+    std::vector<std::string> tP = cleanCSInput(lines[++counter]);
+    transitions.push_back({tP[0], tP[1][0], tP[2][0], tP[3], tP[4]});
+    return transitions;
 }

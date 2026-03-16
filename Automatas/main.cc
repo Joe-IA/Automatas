@@ -10,7 +10,7 @@
 
 int main(int argc, char **argv){
 
-    Automata automata;
+    FSAutomata automata;
     Automata_Manager manager;
     manager.setFiles();
     char opcion,tInput;
@@ -70,21 +70,21 @@ int main(int argc, char **argv){
                 }
                 break;
             case '5':
-                automata = buildAutomataFromTerminal();
+                automata = buildFSAutomataFromTerminal();
                 break;
             case '6':
                 std::cout << "Archivo de salida: ";
                 std::cin >> input;
                 std::cin.ignore();
                 saveAutomatatoFile(automata, input);
-                manager.files.push_back(input);
+                manager.addFile(input);
                 manager.saveFiles();
                 break;
             case '7':
                 std::cout << "Nombre del archivo: ";
                 std::cin >> input;
                 std::cin.ignore();
-                automata = buildAutomataFromFile(input);
+                automata = buildFSAutomataFromFile(input);
                 break;
             case '8':
                 printModifyAutomataMenu();

@@ -24,14 +24,19 @@ std::pair<std::string, char> cleanTransitionInput(std::string input){
 std::vector<std::string> cleanCSInput(std::string input){
     std::string nextValue;
     std::vector<std::string> values;
+    bool afterComma = false;
     for(const char &c: input){
         if(c == ','){
             values.push_back(nextValue);
             nextValue.clear();
+            afterComma = true;
             continue;
         }
-        if(c == ' ')
+        if(c == ' ' && afterComma){
+            afterComma = false;
             continue;
+        }
+        afterComma = false;
         nextValue.push_back(c);
     }
     values.push_back(nextValue);
@@ -40,6 +45,13 @@ std::vector<std::string> cleanCSInput(std::string input){
 
 std::string cleansetNotation(std::string input){
     size_t start = input.find("{") + 1;
+    std::string substring = input.substr(start);
+    substring.pop_back();
+    return substring;
+}
+
+std::string cleanParentheses(std::string input){
+    size_t start = input.find("(") + 1;
     std::string substring = input.substr(start);
     substring.pop_back();
     return substring;
@@ -115,4 +127,36 @@ void printModifyAutomataMenu(){
     std::cout << "5. Agregar simbolo al alphabet\n";
     std::cout << "6. Eliminar Transicion\n";
     std::cout << "Ingrese opcion: ";
+}
+
+std::string stackToString(std::stack<char> stk) {
+    std::string s = "[";
+    std::vector<char> temp;
+
+    while (!stk.empty()) {
+        temp.push_back(stk.top());
+        stk.pop();
+    }
+
+    std::reverse(temp.begin(), temp.end());
+
+    for (size_t i = 0; i < temp.size(); i++) {
+        s += temp[i];
+        if (i + 1 < temp.size()) s += " ";
+    }
+
+    s += "]";
+    return s;
+}
+
+void printStepHeader() {
+    std::cout << "\n  "
+              << std::left << std::setw(8)  << "Paso"
+              << std::setw(10) << "Estado"
+              << std::setw(10) << "Entrada"
+              << std::setw(10) << "Tope"
+              << std::setw(12) << "Operacion"
+              << std::setw(6)  << "->"
+              << "Pila\n";
+    std::cout << "  " << std::string(60, '-') << "\n";
 }

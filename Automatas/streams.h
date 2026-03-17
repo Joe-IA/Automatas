@@ -18,4 +18,8 @@ void saveAutomatatoFile(Automata &automata, std::string ouputFile);
 std::vector<std::string> splitlines(const std::string &text);
 void savetoFile(std::string content, std::string outputFile);
 void printModifyAutomataMenu();
+std::string cleanParentheses(std::string input);
+void printStepHeader();
+std::string stackToString(std::stack<char> stk);
+
 #endif

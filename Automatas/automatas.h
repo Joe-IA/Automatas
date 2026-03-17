@@ -10,7 +10,19 @@
 #include <vector>
 
 typedef std::unordered_map<std::string, std::unordered_map<char, std::vector<std::string>>> TransitionMap;
-typedef std::vector<std::tuple<std::string, char, char, std::string, std::string>> TransitionMapSA;
+enum StackOp {
+    PUSH,
+    POP,
+    NOP
+};
+struct Transition{
+    std::string initialState;
+    char input;
+    char stackTop;
+    StackOp stackOperation;
+    char pushSymbol;
+    std::string newState;
+};
 
 class Automata{
     protected:
@@ -67,21 +79,22 @@ class StackAutomata: public Automata{
     private:
         std::set<char> stackAlphabet;
         char stackSymbol;
-        TransitionMapSA transitions;
+        std::vector<Transition> transitions;
     public:
 
         std::set<char> getStackAlphabet();
         void setStackAlphabet(std::set<char> stackAlphabet);
         char getStackSymbol();
         void setStackSymbol(char stackSymbol);
-        TransitionMapSA &getTransitions();
-        void setTransitions(TransitionMapSA transitions);
+        std::vector<Transition> &getTransitions();
+        void setTransitions(std::vector<Transition> transitions);
 
 
         void printTransitions(std::ostream &os) override;
         void printStackAlphabet(std::ostream &os);
         void describeAutomata(std::ostream &os) override;
-        void acceptWord(std::string word, bool emptyPile);
+        bool acceptWordByFinalState(const std::string &word);
+        bool acceptWordByEmptyStack(const std::string &word);
 
 };
 

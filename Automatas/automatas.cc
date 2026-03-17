@@ -6,6 +6,9 @@
 #include <utility>
 #include <queue>
 #include <vector>
+#include <stack>
+#include <iostream>
+#include <iomanip>
 #include "automatas.h"
 #include "automataCreator.h"
 #include "streams.h"
@@ -326,11 +329,24 @@ void FSAutomata::printWordConstruction(const std::string& word, const std::vecto
 
 
 void StackAutomata::printTransitions(std::ostream &os) {
-    std::string sep = ", ";
+    std::string sep = ", ", op;
     os << "δ: {\n";
     for(const auto &transition: StackAutomata::transitions){
-        auto [state, input, pileSymbol, operation, newState ] = transition;
-        os << "T(" << state << sep << input << sep << pileSymbol << sep << operation << sep << newState << ")\n";
+        switch (transition.stackOperation)
+        {
+        case StackOp::PUSH:
+            op = "PUSH";
+            break;
+        case StackOp::NOP:
+            op = "NOP";
+            break;
+        case StackOp::POP:
+            op = "POP";
+            break;
+        }
+        os << "(" << transition.initialState << sep << transition.input << sep << transition.stackTop << sep << op;
+        os << (transition.stackOperation == StackOp::PUSH ?  std::string(" ") + transition.pushSymbol : ""); 
+        os << sep << transition.newState << ")\n";
     }
     os << "}\n";
 }
@@ -351,11 +367,11 @@ void StackAutomata::setStackSymbol(char stackSymbol){
     StackAutomata::stackSymbol = stackSymbol;
 }
 
-TransitionMapSA &StackAutomata::getTransitions(){
+std::vector<Transition> &StackAutomata::getTransitions(){
     return StackAutomata::transitions;
 }
 
-void StackAutomata::setTransitions(TransitionMapSA transitions){
+void StackAutomata::setTransitions(std::vector<Transition> transitions){
     StackAutomata::transitions = transitions;
 }
 
@@ -363,14 +379,185 @@ void StackAutomata::describeAutomata(std::ostream &os){
     printAlphabet(os);
     printStackAlphabet(os);
     printStates(states, "Q", os);
-    os << "A0: {" <<  stackSymbol << "}\n"; 
-    os << "s: {" << initialState << "}\n";
+    os << "A0: " <<  stackSymbol << "\n"; 
+    os << "s: " << initialState << "\n";
     printStates(finalStates, "F", os);
     printTransitions(os); 
 }
 
-void StackAutomata::acceptWord(std::string word, bool emptyPile){
+bool StackAutomata::acceptWordByFinalState(const std::string& word) {
+    std::string currentState = initialState;
+    std::stack<char> stk;
+    stk.push(stackSymbol);
 
+    printStepHeader();
+
+    std::cout << "  "
+              << std::left << std::setw(8)  << "0"
+              << std::setw(10) << currentState
+              << std::setw(10) << word
+              << std::setw(10) << stk.top()
+              << std::setw(12) << "Inicio"
+              << std::setw(6)  << ""
+              << stackToString(stk) << "\n";
+
+    int step = 1;
+
+    for (size_t i = 0; i < word.size(); i++) {
+
+        char ch = word[i];
+        std::string remaining = word.substr(i + 1);
+
+        if (stk.empty()) {
+            std::cout << "  [Pila vacia] No hay transicion posible -> RECHAZADA\n";
+            return false;
+        }
+
+        char topChar = stk.top();
+        bool found = false;
+
+        for (const auto& t : transitions) {
+
+            if (t.initialState == currentState &&   
+                t.input == ch &&
+                t.stackTop == topChar) {
+
+                std::string opLabel;
+
+                if (t.stackOperation == StackOp::PUSH) {
+                    stk.push(t.pushSymbol);
+                    opLabel = "Push " + std::string(1, t.pushSymbol);
+                }
+                else if (t.stackOperation == StackOp::NOP) {
+                    opLabel = "Nop";
+                }
+                else {
+                    opLabel = "Pop";
+                    stk.pop();
+                }
+
+                std::cout << "  "
+                          << std::left << std::setw(8)  << step
+                          << std::setw(10) << t.newState
+                          << std::setw(10) << (remaining.empty() ? "ε" : remaining)
+                          << std::setw(10) << topChar
+                          << std::setw(12) << opLabel
+                          << std::setw(6)  << t.newState
+                          << stackToString(stk) << "\n";
+
+                currentState = t.newState;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            std::cout << "  [Sin transicion] (" << currentState << ", "
+                      << ch << ", " << topChar << ") -> RECHAZADA\n";
+            return false;
+        }
+
+        step++;
+    }
+
+    bool accepted = finalStates.count(currentState) > 0;
+
+    std::cout << "  " << std::string(60, '-') << "\n";
+    std::cout << "  Estado final: " << currentState
+              << "  |  Pila: " << stackToString(stk)
+              << "  |  " << (accepted ? "** ACEPTADA **"
+                                     : "RECHAZADA (no es estado final)") << "\n";
+
+    return accepted;
+}
+bool StackAutomata::acceptWordByEmptyStack(const std::string& word) {
+
+    std::string currentState = initialState;
+    std::stack<char> stk;
+    stk.push(stackSymbol);
+
+    std::string remaining = word;
+
+    printStepHeader();
+
+    std::cout << "  "
+              << std::left << std::setw(8)  << "0"
+              << std::setw(10) << currentState
+              << std::setw(10) << remaining
+              << std::setw(10) << stk.top()
+              << std::setw(12) << "Inicio"
+              << std::setw(6)  << ""
+              << stackToString(stk) << "\n";
+
+    int step = 1;
+
+    for (size_t i = 0; i < word.size(); i++) {
+
+        char ch = remaining[0];
+        remaining = remaining.substr(1);
+
+        if (stk.empty()) {
+            std::cout << "  [Pila vacia] No hay transicion posible -> RECHAZADA\n";
+            return false;
+        }
+
+        char topChar = stk.top();
+        bool found = false;
+
+        for (const auto& t : transitions) {
+
+            if (t.initialState == currentState &&
+                t.input == ch &&
+                t.stackTop == topChar) {
+
+                std::string opLabel;
+
+                if (t.stackOperation == StackOp::PUSH) {
+                    stk.push(t.pushSymbol);
+                    opLabel = "Push " + std::string(1, t.pushSymbol);
+                }
+                else if (t.stackOperation == StackOp::NOP) {
+                    opLabel = "Nop";
+                }
+                else {
+                    stk.pop();
+                    opLabel = "Pop";
+                }
+
+                std::cout << "  "
+                          << std::left << std::setw(8)  << step
+                          << std::setw(10) << t.newState
+                          << std::setw(10) << (remaining.empty() ? "ε" : remaining)
+                          << std::setw(10) << topChar
+                          << std::setw(12) << opLabel
+                          << std::setw(6)  << t.newState
+                          << stackToString(stk) << "\n";
+
+                currentState = t.newState;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            std::cout << "  [Sin transicion] (" << currentState << ", "
+                      << ch << ", " << topChar << ") -> RECHAZADA\n";
+            return false;
+        }
+
+        step++;
+    }
+
+    bool accepted = stk.top() == 'z' && remaining.empty();
+
+    std::cout << "  " << std::string(60, '-') << "\n";
+    std::cout << "  Estado final: " << currentState
+              << "  |  Pila: " << (stk.empty() ? "[vacia]" : stackToString(stk))
+              << "  |  Entrada restante: " << (remaining.empty() ? "ε" : remaining)
+              << "  |  " << (accepted ? "** ACEPTADA **"
+                                     : "RECHAZADA") << "\n";
+
+    return accepted;
 }
 
 void StackAutomata::printStackAlphabet(std::ostream &os){

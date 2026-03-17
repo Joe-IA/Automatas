@@ -4,6 +4,7 @@
 #include "automataCreator.h"
 #include "streams.h"
 
+
 FSAutomata buildFSAutomataFromTerminal(){
     FSAutomata automata;
 
@@ -51,7 +52,7 @@ std::set<std::string> getStates(){
     std::getline(std::cin, states);
     std::vector<std::string> statesList = cleanCSInput(states);
     std::set<std::string> statesSet(statesList.begin(), statesList.end());
-    return statesSet;    
+    return statesSet;
 }
 
 std::tuple<std::string, char, std::vector<std::string>> getTransitionFS(){
@@ -73,7 +74,6 @@ std::set<char> getAlphabet(){
         alphabet.insert(symbol[0]);
     }
     return alphabet;
-
 }
 
 std::set<std::string> buildStateSet(std::string stateString){
@@ -129,7 +129,7 @@ StackAutomata buildStackAutomataFromFile(std::string fileName){
     automata.setAlphabet(buildAlphabetSet(lines[0]));
     automata.setStackAlphabet(buildAlphabetSet(lines[1]));
     automata.setStates(buildStateSet(lines[2]));
-    automata.setStackSymbol(lines[3].substr(3)[0]);
+    automata.setStackSymbol(lines[3].substr(4)[0]);
     automata.setInitialState(lines[4].substr(3));
     automata.setFinalStates(buildStateSet(lines[5]));
     automata.setTransitions(buildTransitionVector(6, lines));
@@ -166,16 +166,42 @@ StackAutomata buildStackAutomataFromTerminal(){
     return automata;
 }
 
-std::tuple<std::string, char, char, std::string, std::string> getTransitionSA(){
+Transition getTransitionSA(){
     std::string transition;
     std::getline(std::cin, transition);
-    std::vector<std::string> tP = cleanCSInput(transition);
-    return {tP[0], tP[1][0], tP[2][0], tP[3], tP[4]};
+    return createTransition(transition);
 }
 
-TransitionMapSA buildTransitionVector(uint8_t counter, std::vector<std::string> lines){
-    TransitionMapSA transitions;
-    std::vector<std::string> tP = cleanCSInput(lines[++counter]);
-    transitions.push_back({tP[0], tP[1][0], tP[2][0], tP[3], tP[4]});
+std::vector<Transition> buildTransitionVector(uint8_t counter, std::vector<std::string> lines){
+    std::vector<Transition> transitions;
+    StackOp op;
+    size_t space_pos;
+    std::string command, value;
+    while(++counter < lines.size() && lines[counter] != "}"){
+        transitions.push_back(createTransition(lines[counter]));
+    }
     return transitions;
+}
+
+inline Transition createTransition(std::string input){
+    std::string command, value;
+    StackOp op;
+    input = cleanParentheses(input);
+    std::vector<std::string> tP = cleanCSInput(input);
+    size_t space_pos = tP[3].find(' ');
+    if(space_pos == std::string::npos){
+        command = tP[3];
+        value = '\0';
+    }
+    else{
+        command = tP[3].substr(0, space_pos);
+        value = tP[3].substr(space_pos + 1);
+    }
+    if(command == "PUSH")
+        op = StackOp::PUSH;
+    else if(command == "POP")
+        op = StackOp::POP;
+    else if(command == "NOP")
+        op = StackOp::NOP;
+    return {tP[0], tP[1][0], tP[2][0], op, value[0],tP[4]};
 }

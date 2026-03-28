@@ -21,5 +21,6 @@ void printModifyAutomataMenu();
 std::string cleanParentheses(std::string input);
 void printStepHeader();
 std::string stackToString(std::stack<char> stk);
+std::tuple<std::string, char, std::string, char,  tapeDirection> cleanTMTransition(const std::string &input);
 
 #endif

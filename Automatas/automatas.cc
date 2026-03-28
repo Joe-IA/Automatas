@@ -594,3 +594,94 @@ void Automata_Manager::showFiles(){
 void Automata_Manager::addFile(std::string file){
     files.push_back(file);
 }
+
+
+std::set<char> TuringMachine::getInputAlphabet(){
+    return TuringMachine::inputAlphabet;
+}
+
+void TuringMachine::setInputAlphabet(std::set<char> inputAlphabet){
+    TuringMachine::inputAlphabet = inputAlphabet;
+}
+
+
+char TuringMachine::getNullChar(){
+    return TuringMachine::nullChar;
+}
+
+void TuringMachine::setNullChar(char nullChar){
+    TuringMachine::nullChar = nullChar;
+}
+
+std::vector<TMTransition> &TuringMachine::getTransitions(){
+    return TuringMachine::transitions;
+}
+
+void TuringMachine::setTransitions(std::vector<TMTransition> transitions){
+    TuringMachine::transitions = transitions;
+}
+
+void TuringMachine::printTransitions(std::ostream &os){
+    os << "δ: {\n";
+    for(const auto &trans : TuringMachine::transitions){
+        os << '(' << trans.initialState << ", " << trans.onTapeChar << " = "
+        << '(' << trans.newState << ", " << trans.charToWrite << " / " 
+        << getDisplaymentSymbol(trans.tapeMoveTo) << ")\n";
+    }
+    os << "}\n";
+}
+
+char TuringMachine::getDisplaymentSymbol(tapeDirection symbol){
+    switch(symbol){
+        case tapeDirection::R:
+            return 'R';
+        case tapeDirection::L:
+            return 'L';
+        case tapeDirection::S:
+            return 'S';
+        default:
+            return '?';
+        
+    }
+}
+
+tapeDirection TuringMachine::getDisplayDirection(char symbol){
+    switch(symbol){
+        case 'R':
+        return tapeDirection::R;
+        case 'L':
+        return tapeDirection::L;
+        case 'S':
+        return tapeDirection::S;
+    }
+}
+
+void TuringMachine::describeAutomata(std::ostream &os){
+    printInputAlphabet(os);
+    printTapeAlphabet(os);
+    printStates(states, "Q", os);
+    os << "B = " << getNullChar() << '\n';
+    os << "s = " << getInitialState() << '\n';
+    printStates(finalStates, "F", os);
+    printTransitions(os);
+}
+
+void TuringMachine::printInputAlphabet(std::ostream &os){
+        os << "∑: {";
+    for(auto it = inputAlphabet.begin(); it != inputAlphabet.end(); ++it){
+        os << *it;
+        if(next(it) != inputAlphabet.end())
+            os << ", ";
+    }
+    os << "}\n";
+}
+
+void TuringMachine::printTapeAlphabet(std::ostream &os){
+        os << "Γ: {";
+    for(auto it = alphabet.begin(); it != alphabet.end(); ++it){
+        os << *it;
+        if(next(it) != alphabet.end())
+            os << ", ";
+    }
+    os << "}\n";
+}

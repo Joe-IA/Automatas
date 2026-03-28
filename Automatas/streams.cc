@@ -160,3 +160,11 @@ void printStepHeader() {
               << "Pila\n";
     std::cout << "  " << std::string(60, '-') << "\n";
 }
+
+std::tuple<std::string, char, std::string, char,  tapeDirection> cleanTMTransition(const std::string &input){
+    auto [initialState, in] = cleanTransitionInput(input);
+    std::string secondPart = input.substr(input.find('='));
+    auto [newState, _2BWritten] = cleanTransitionInput(secondPart);
+    char dir = input.substr(input.find('/') + 2)[0];
+    return {initialState, in, newState, _2BWritten, TuringMachine::getDisplayDirection(dir)};
+}

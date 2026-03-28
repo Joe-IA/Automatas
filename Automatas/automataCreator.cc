@@ -205,3 +205,32 @@ inline Transition createTransition(std::string input){
         op = StackOp::NOP;
     return {tP[0], tP[1][0], tP[2][0], op, value[0],tP[4]};
 }
+
+TuringMachine buildTMFromFile(std::string fileName){
+    TuringMachine machine;
+    std::string fileContent = readFile(fileName);
+    std::vector<std::string> lines = splitlines(fileContent);
+    machine.setInputAlphabet(buildAlphabetSet(lines[0]));
+    machine.setAlphabet(buildAlphabetSet(lines[1]));
+    machine.setStates(buildStateSet(lines[2]));
+    machine.setInitialState(lines[3].substr(3));
+    machine.setNullChar(lines[4].substr(3)[0]);
+    machine.setFinalStates(buildStateSet(lines[5]));
+    machine.setTransitions(buildTMTransitionVector(6, lines));
+    return machine;
+}
+
+std::vector<TMTransition> buildTMTransitionVector(size_t counter, std::vector<std::string> lines){
+    std::vector<TMTransition> transitions;
+    while(lines[++counter] != "}"){
+        transitions.push_back(createTMTransition(lines[counter]));
+    }
+    return transitions;
+}
+
+inline TMTransition createTMTransition(std::string input){
+    TMTransition transition;
+    auto [initialState, in, newState, _2BWritten, dir] = cleanTMTransition(input);
+    transition = {initialState, in, newState, _2BWritten, dir};
+    return transition;
+}

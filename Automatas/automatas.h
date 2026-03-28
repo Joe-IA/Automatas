@@ -15,6 +15,11 @@ enum StackOp {
     POP,
     NOP
 };
+enum tapeDirection{
+    R,
+    L,
+    S
+};
 struct Transition{
     std::string initialState;
     char input;
@@ -22,6 +27,14 @@ struct Transition{
     StackOp stackOperation;
     char pushSymbol;
     std::string newState;
+};
+
+struct TMTransition{
+    std::string initialState;
+    char onTapeChar;
+    std::string newState;
+    char charToWrite;
+    tapeDirection tapeMoveTo;
 };
 
 class Automata{
@@ -45,7 +58,7 @@ class Automata{
         virtual void printTransitions(std::ostream & os) = 0;
         void printAlphabet(std::ostream & os);
         virtual void describeAutomata(std::ostream & os) = 0;
-        virtual void printStates(std::set<std::string> statesSet, std::string stateType, std::ostream & os);
+        void printStates(std::set<std::string> statesSet, std::string stateType, std::ostream & os);
         bool isValidState(std::string state);
         bool isValidFinalState(std::string state);
 };
@@ -98,7 +111,26 @@ class StackAutomata: public Automata{
 
 };
 
+class TuringMachine: public Automata{
+    private:
+        std::set<char> inputAlphabet;
+        char nullChar;
+        std::vector<TMTransition> transitions;
 
+    public:
+        std::set<char> getInputAlphabet();
+        void setInputAlphabet(std::set<char> inputAlphabet);
+        char getNullChar();
+        void setNullChar(char nullChar);
+        std::vector<TMTransition> &getTransitions();
+        void setTransitions(std::vector<TMTransition> transitions);
+        void printTransitions(std::ostream & os) override;
+        void describeAutomata(std::ostream & os) override;
+        char getDisplaymentSymbol(tapeDirection symbol);
+        void printInputAlphabet(std::ostream &os);
+        static tapeDirection getDisplayDirection(char symbol);
+        void printTapeAlphabet(std::ostream &os);
+};
 class Automata_Manager{
     private:
         std::vector<std::string> files;

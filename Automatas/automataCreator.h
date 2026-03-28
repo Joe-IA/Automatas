@@ -24,4 +24,8 @@ std::pair<TransitionMap, size_t> buildTransitionMap(size_t counter, std::vector<
 void insertTransitiontoMap(TransitionMap &transitions, std::pair<std::string, char> pair, std::vector<std::string> newState);
 std::vector<Transition> buildTransitionVector(uint8_t counter, std::vector<std::string> lines);
 inline Transition createTransition(std::string input);
+TuringMachine buildTMFromFile(std::string fileName);
+std::vector<TMTransition> buildTMTransitionVector(size_t counter, std::vector<std::string> lines);
+inline TMTransition createTMTransition(std::string input);
+
 #endif

@@ -213,8 +213,8 @@ TuringMachine buildTMFromFile(std::string fileName){
     machine.setInputAlphabet(buildAlphabetSet(lines[0]));
     machine.setAlphabet(buildAlphabetSet(lines[1]));
     machine.setStates(buildStateSet(lines[2]));
-    machine.setInitialState(lines[3].substr(3));
-    machine.setNullChar(lines[4].substr(3)[0]);
+    machine.setInitialState(lines[4].substr(3));
+    machine.setNullChar(lines[3].substr(3)[0]);
     machine.setFinalStates(buildStateSet(lines[5]));
     machine.setTransitions(buildTMTransitionVector(6, lines));
     return machine;

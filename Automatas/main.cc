@@ -215,6 +215,15 @@ int main(int argc, char **argv){
                         TM.describeAutomata(std::cout);
                     break;
                     case '3':
+                        char blankSymbol;
+                        std::string word;
+                        std::cout << "Blank: ";
+                        std::cin >> blankSymbol;
+                        std::cin.ignore();
+                        std::cout << "Palabra: ";
+                        std::cin >> word;
+                        std::cin.ignore();
+                        TM.validateWord(word, blankSymbol);
                     break;
                 }
                 

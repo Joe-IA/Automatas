@@ -168,3 +168,14 @@ std::tuple<std::string, char, std::string, char,  tapeDirection> cleanTMTransiti
     char dir = input.substr(input.find('/') + 2)[0];
     return {initialState, in, newState, _2BWritten, TuringMachine::getDisplayDirection(dir)};
 }
+
+void printTape(const std::vector<char> &tape, size_t currentIndex, std::string currentState){
+    for(const char &c: tape){
+        std::cout << "|--" << c << "--|";
+    }
+    std::cout << "\n";
+    for(uint16_t i = 0; i < 4 + 7 * currentIndex; ++i){
+        std::cout << " ";
+    }
+    std::cout << "^" << currentState << "\n";
+}

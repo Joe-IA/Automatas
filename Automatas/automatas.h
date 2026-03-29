@@ -130,6 +130,7 @@ class TuringMachine: public Automata{
         void printInputAlphabet(std::ostream &os);
         static tapeDirection getDisplayDirection(char symbol);
         void printTapeAlphabet(std::ostream &os);
+        void validateWord(const std::string &word, char blankChar);
 };
 class Automata_Manager{
     private:

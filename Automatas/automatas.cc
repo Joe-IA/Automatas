@@ -624,7 +624,7 @@ void TuringMachine::setTransitions(std::vector<TMTransition> transitions){
 void TuringMachine::printTransitions(std::ostream &os){
     os << "δ: {\n";
     for(const auto &trans : TuringMachine::transitions){
-        os << '(' << trans.initialState << ", " << trans.onTapeChar << " = "
+        os << '(' << trans.initialState << ", " << trans.onTapeChar << ") = "
         << '(' << trans.newState << ", " << trans.charToWrite << " / " 
         << getDisplaymentSymbol(trans.tapeMoveTo) << ")\n";
     }
@@ -685,3 +685,62 @@ void TuringMachine::printTapeAlphabet(std::ostream &os){
     }
     os << "}\n";
 }
+
+void TuringMachine::validateWord(const std::string &word, char blankChar){
+    std::vector<char> tape;
+    size_t pivot;
+    tape.push_back(blankChar);
+    tape.push_back(blankChar);
+    for(const char &c: word){
+        tape.push_back(c);
+    }
+    tape.push_back(blankChar);
+    tape.push_back(blankChar);
+    bool availableTrans;
+    size_t currentIndex = 2;
+    std::string currentState = TuringMachine::initialState;
+    do{
+        availableTrans = false;
+        printTape(tape, currentIndex, currentState);
+        for(const auto &trans : TuringMachine::transitions){
+            if(trans.initialState == currentState && 
+               trans.onTapeChar == tape[currentIndex]){
+                availableTrans = true;
+                tape[currentIndex] = trans.charToWrite;
+                currentState = trans.newState;
+                switch(trans.tapeMoveTo){
+                    case tapeDirection::L:
+                        currentIndex--;
+                    break;
+                    case tapeDirection::R:
+                        currentIndex++;
+                    break;
+                    case tapeDirection::S:
+                    break;
+                }
+                std::cout << "Transición: (" << trans.initialState << ", " << trans.onTapeChar << ") = (" 
+                << trans.newState << ", " << trans.charToWrite << " / " << getDisplaymentSymbol(trans.tapeMoveTo) << ")\n";
+                std::cout << "\n";
+                break;
+            }
+            
+        }
+        if(currentIndex >= tape.size() - 2)
+            tape.push_back(blankChar);
+        if(currentIndex == 1){
+            tape.insert(tape.begin(), blankChar);
+            currentIndex++;
+        }
+            
+
+    } while(availableTrans);
+    std::cout << "No hay transiciones disponibles, fin de operación\n";
+    std::cout << "Cinta final: ";
+    for(const char &c: tape){
+        if(c == blankChar)
+            continue;
+        std::cout << c;
+    }
+    std::cout << "\n";
+}
+
